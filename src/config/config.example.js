@@ -11,6 +11,7 @@ nconf.defaults({
 	'facebook-client-id':'',
 	'facebook-client-secret':'',
 	'google-client-id':'',
+	'mongo-uri': 'mongodb://127.0.0.1:27017/nonybrighto',
 	'jwt_token-expire-days':30
 });
 
