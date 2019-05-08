@@ -5,8 +5,7 @@ const router = express.Router();
 
 
 router.route('/')
-     .get(userController.list)
-     .post(userController.add);
+     .get(userController.list);
 
 
 export default router;

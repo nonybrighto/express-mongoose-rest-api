@@ -48,7 +48,7 @@ UserSchema.statics.canLogin = async function(credential, password){
         userDataToFind['username'] = credential;
     }
    
-    let user = await this.find(userDataToFind).exec();
+    let user = await this.findOne(userDataToFind).select('+password +email').exec();
     if(user){
         let passwordMatch = await bcrypt.compare(password, user.password);
             if (passwordMatch) {
