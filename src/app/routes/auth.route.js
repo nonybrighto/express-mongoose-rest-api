@@ -1,5 +1,6 @@
 import express from 'express';
 import authController from '../controllers/auth.controller';
+import {loginLimiter} from '../middlewares/auth_middleware';
 
 const router = express.Router();
 
@@ -8,7 +9,12 @@ router.route('/register')
      .post(authController.register);
 
 router.route('/login')
-     .post(authController.login);
+     .post([loginLimiter],authController.login);
+
+//post request should contain id_token and access_token
+router.post('/google/token', authController.googleIdTokenAuth);
+//facebook's post body should contain access_token and optionally, refresh_token 
+router.post('/facebook/token', authController.facebookTokenAuth);
 
 
 export default router;

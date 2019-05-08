@@ -35,6 +35,10 @@
     "morgan": "^1.9.1",
     "nconf": "^0.10.0",
     "passport": "^0.4.0",
+    "passport-facebook-token": "^3.3.0",
+    "passport-google-id-token": "^0.4.6",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "save-dev": "^2.0.0"
   },

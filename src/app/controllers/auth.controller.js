@@ -2,6 +2,7 @@ import User from  '../models/user.model';
 import createError from 'http-errors';
 import JwtHelper from './../helpers/jwt_helper';
 import httpStatus from 'http-status';
+import passport from 'passport';
 
 async function register(req, res, next){
     try{
@@ -23,20 +24,46 @@ async function register(req, res, next){
 }
 
 async function login(req, res, next){
-    try{
-        // @ts-ignore
-        let user = await User.canLogin(req.body.credential, req.body.password);
-        if(user){
-            let helper = new JwtHelper(user);
-            helper.sendJwtResponse(res);
+    passport.authenticate('local', { session: false }, (err, user, info) => {
+
+        if (err || !user) {
+            next(createError(httpStatus.BAD_REQUEST, 'Login failed'));
         }else{
-            next(createError(httpStatus.FORBIDDEN,'Invalid login credentials'));
+            req.login(user, { session: false }, (err) => {
+                if (err) {
+                   next(createError(httpStatus.BAD_REQUEST, 'Login failed'));
+                }
+                let helper = new JwtHelper(user);
+                helper.sendJwtResponse(res);
+            });
         }
-        
-    }catch(error){
-        console.log(error);
-        next(createError('Error occured while adding user'));
-     }
+    })(req, res, next);
 }
 
-export default {register, login}
+function googleIdTokenAuth(req, res, next){
+
+    passport.authenticate('google-id-token', { session: false },
+        (err, user, info) => {
+            if (err || info) {
+               return next(createError(httpStatus.BAD_REQUEST, 'Google authentication failed'));
+            }
+            let helper = new JwtHelper(user);
+            helper.sendJwtResponse(res);
+        })(req, res, next);
+}
+
+
+function facebookTokenAuth(req, res, next){
+
+    passport.authenticate('facebook-token', { session: false },
+        (err, user, info) => {
+            if (err || info) {
+                return next(createError(httpStatus.BAD_REQUEST, 'Facebook authentication failed'));
+            }
+            let helper = new JwtHelper(user);
+            helper.sendJwtResponse(res);
+        })(req, res, next);
+
+}
+
+export default {register, login, googleIdTokenAuth, facebookTokenAuth}

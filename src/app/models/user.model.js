@@ -60,5 +60,26 @@ UserSchema.statics.canLogin = async function(credential, password){
     return false;
 }
 
+UserSchema.statics.findOrCreateSocialUser = async function({email, name, profilePhoto}){
+
+    let user = this.find({email: email}).exec();
+    if(user){
+        return user;
+    }else{
+        let username = name.split(' ')[0].trim();
+        while(await this.findOne({username: username})){
+            let randomNumbers = Math.floor(Math.random() * 200);
+            username = username+randomNumbers;
+        }
+
+        let  randomPasswordString  = Math.random().toString(36).slice(-8);
+        let user = this({username: username, email:email, password:randomPasswordString, profilePhoto: profilePhoto});
+        let userRegistered = await user.save();
+
+        return userRegistered;
+    }
+
+}
+
 
 export default mongoose.model('User', UserSchema);

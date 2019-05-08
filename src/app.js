@@ -12,6 +12,7 @@ import cors from 'cors';
 import RateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import router from './app/routes/index.route';
+import configurePassport from './config/passport';
 
 const app = express();
 app.use(helmet());
@@ -21,8 +22,8 @@ app.use(logger('dev'));
 app.use(helmet());
 app.use(cors());
 
-// require('./config/passport')(passport);
-// app.use(passport.initialize());
+app.use(passport.initialize());
+configurePassport();
 
 const apiLimiter =  new RateLimit({
   windowMs: 5 * 60 * 1000,
