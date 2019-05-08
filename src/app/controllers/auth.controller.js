@@ -63,6 +63,32 @@ async function refreshJwtToken(req, res, next){
     }
 }
 
+async function changePassword(req, res, next){
+
+    try{
+        let oldPassword = req.body.oldPassword;
+        let newPassword = req.body.newPassword;
+
+        // @ts-ignore
+        let user = await User.canLogin(req.user.username, oldPassword);
+        if(user){
+                // @ts-ignore
+               let changed = await user.changePassword(newPassword);
+               if(changed){
+                    res.sendStatus(200);
+               }else{
+                    throw new Error('Could not change password');
+               }
+        }else{
+            next(createError(httpStatus.UNAUTHORIZED, 'not permitted to change password'));
+        }
+    }catch(error){
+        console.log(error);
+        next(createError('Error occured while changing password'));
+    }
+
+}
+
 function googleIdTokenAuth(req, res, next){
 
     passport.authenticate('google-id-token', { session: false },
@@ -89,4 +115,4 @@ function facebookTokenAuth(req, res, next){
 
 }
 
-export default {register, login, refreshJwtToken, googleIdTokenAuth, facebookTokenAuth}
+export default {register, login, refreshJwtToken, changePassword, googleIdTokenAuth, facebookTokenAuth}

@@ -38,6 +38,18 @@ UserSchema.pre('save', async function (next){
 
 });
 
+UserSchema.methods.changePassword = async function(newPassword){
+
+     this.password = newPassword;
+     let user = await this.save();
+     console.log(user);
+     if(user){
+         return true;
+     }
+     return false;
+
+}
+
 
 UserSchema.statics.canLogin = async function(credential, password){
 

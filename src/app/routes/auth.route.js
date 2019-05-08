@@ -14,6 +14,9 @@ router.route('/login')
 router.route('/refresh')
       .get([jwtRequiredAuthentication],authController.refreshJwtToken);
 
+router.route('/changePassword')
+      .post([jwtRequiredAuthentication],authController.changePassword);
+
 //post request should contain id_token and access_token
 router.post('/google/token', authController.googleIdTokenAuth);
 //facebook's post body should contain access_token and optionally, refresh_token 
