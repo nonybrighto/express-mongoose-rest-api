@@ -1,4 +1,5 @@
 import User from  '../models/user.model';
+import JwtTokenBlacklist from '../models/jwt_token_blacklist.models';
 import createError from 'http-errors';
 import JwtHelper from './../helpers/jwt_helper';
 import httpStatus from 'http-status';
@@ -40,6 +41,28 @@ async function login(req, res, next){
     })(req, res, next);
 }
 
+async function refreshJwtToken(req, res, next){
+    try{
+        let userJwtToken = req.headers.authorization.split(' ')[1];
+        let currentUserId = req.user.id;
+        let user = await User.findById(currentUserId);
+        if(user){
+            
+            //add token to deleted tokens so it can't have access anymore
+            let deletedToken = new JwtTokenBlacklist({token: userJwtToken});
+            await deletedToken.save();
+
+            let helper = new JwtHelper(user);
+            helper.sendJwtResponse(res);
+        }else{
+            next(createError(httpStatus.NOT_FOUND, 'Error occured while refreshing token'));
+        }
+    }catch(error){
+        console.log(error);
+        next(createError('Error occured while refreshing token'));
+    }
+}
+
 function googleIdTokenAuth(req, res, next){
 
     passport.authenticate('google-id-token', { session: false },
@@ -66,4 +89,4 @@ function facebookTokenAuth(req, res, next){
 
 }
 
-export default {register, login, googleIdTokenAuth, facebookTokenAuth}
+export default {register, login, refreshJwtToken, googleIdTokenAuth, facebookTokenAuth}

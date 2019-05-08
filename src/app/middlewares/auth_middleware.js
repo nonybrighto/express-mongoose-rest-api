@@ -2,6 +2,7 @@ import passport from 'passport';
 import RateLimit from 'express-rate-limit';
 import createError from 'http-errors';
 import httpStatus from 'http-status';
+import JwtTokenBlacklist from '../models/jwt_token_blacklist.models';
 
 const loginLimiter = new RateLimit({
     windowMs: 2 * 60 * 1000,
@@ -13,22 +14,28 @@ const loginLimiter = new RateLimit({
 
 function jwtRequiredAuthentication(req, res, next){
 
-  passport.authenticate('jwt', {session: false}, (err, user, info) => {
+  passport.authenticate('jwt', {session: false}, async (err, user, info) => {
 
-    if (err || !user) {
-      next(createError(httpStatus.UNAUTHORIZED, 'Request not authorized'));
+    //This token is used to make sure the user is not making use of a token that has been logged out or changed
+    //remove if not necessary
+    let userJwtToken = req.headers.authorization.split(' ')[1];
+    if (err || !user || await JwtTokenBlacklist.findOne({token:userJwtToken })) {
+        next(createError(httpStatus.UNAUTHORIZED, 'Request not authorized'));
     }else{
-      req.user = user;
+        req.user = user;
     }
-  next();
-  })(req, res, next);
-  
+    next();
+})(req, res, next);
+
 }
 
 function jwtOptionalAuthentication(req, res, next){
-
-  passport.authenticate('jwt', {session: false}, (err, user, info) => {
-    if(user){
+    
+    //This token is used to make sure the user is not making use of a token that has been logged out or changed
+    //remove if not necessary
+  let userJwtToken = req.headers.authorization.split(' ')[1];
+  passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+    if(user && !(await JwtTokenBlacklist.findOne({token:userJwtToken }))){
       req.user = user;
     }
   next();

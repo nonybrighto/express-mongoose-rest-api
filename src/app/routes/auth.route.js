@@ -1,6 +1,6 @@
 import express from 'express';
 import authController from '../controllers/auth.controller';
-import {loginLimiter} from '../middlewares/auth_middleware';
+import {loginLimiter, jwtRequiredAuthentication} from '../middlewares/auth_middleware';
 
 const router = express.Router();
 
@@ -10,6 +10,9 @@ router.route('/register')
 
 router.route('/login')
      .post([loginLimiter],authController.login);
+
+router.route('/refresh')
+      .get([jwtRequiredAuthentication],authController.refreshJwtToken);
 
 //post request should contain id_token and access_token
 router.post('/google/token', authController.googleIdTokenAuth);

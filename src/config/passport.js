@@ -40,7 +40,7 @@ function configurePassport(){
     async function (jwtPayload, done) {
 
         try{
-            const user = await User.findOne({_id: jwtPayload.id}).select('+email').exec();
+            const user = await User.findById(jwtPayload.id).select('+email').exec();
             if(user){
                 return done(null, user);
             }else{
