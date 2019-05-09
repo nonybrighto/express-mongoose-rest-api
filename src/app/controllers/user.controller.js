@@ -1,13 +1,18 @@
-import User from  '../models/user.model';
 import httpStatus from 'http-status';
 import createError from 'http-errors';
+import User from  '../models/user.model';
+import listResponse from '../helpers/list_response';
 
 
 async function list(req, res, next){
        
     try{        
-        const users = await User.find().exec();
-        res.status(httpStatus.OK).send(users);
+       
+        await listResponse({
+            itemCount: await User.count({}),
+            getItems: async (skip, limit) => await  User.find({}).skip(skip).limit(limit).exec(),
+            errorMessage: 'Error occured while getting users'
+        })(req, res, next);
     }catch(error){
         next(createError('Error occured while getting users'));
     }

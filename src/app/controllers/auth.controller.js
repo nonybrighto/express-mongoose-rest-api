@@ -1,8 +1,8 @@
 import User from  '../models/user.model';
 import JwtTokenBlacklist from '../models/jwt_token_blacklist.models';
 import createError from 'http-errors';
-import JwtHelper from './../helpers/jwt_helper';
 import httpStatus from 'http-status';
+import JwtHelper from './../helpers/jwt_helper';
 import passport from 'passport';
 
 async function register(req, res, next){

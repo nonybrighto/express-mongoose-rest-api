@@ -2,6 +2,7 @@ import express from 'express';
 import userController from '../controllers/user.controller';
 import {jwtRequiredAuthentication} from '../middlewares/auth_middleware';
 
+
 const router = express.Router();
 
 
