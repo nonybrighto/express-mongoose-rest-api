@@ -2,6 +2,15 @@
 
 import nconf from 'nconf';
 
+nconf.argv().env();
+
+const environment = nconf.get('env') || 'development';
+
+//used to get test sspecific configurations - file will not be read during production.
+if(environment === 'test'){
+	nconf.file(__dirname+'/test.json');
+}
+
 nconf.defaults({
 	'api-v1-url': 'http://localhost:3000/api/v1/',
 	'env': 'development',
@@ -11,7 +20,7 @@ nconf.defaults({
 	'facebook-client-id':'',
 	'facebook-client-secret':'',
 	'google-client-id':'',
-	'mongo-uri': 'mongodb://127.0.0.1:27017/nonybrighto',
+	'mongo-uri': 'mongodb://127.0.0.1:27017/dbname',
 	'jwt_token-expire-days':30
 });
 
