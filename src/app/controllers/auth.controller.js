@@ -2,7 +2,6 @@ import User from  '../models/user.model';
 import JwtTokenBlacklist from '../models/jwt_token_blacklist.models';
 import createError from 'http-errors';
 import httpStatus from 'http-status';
-import JwtHelper from './../helpers/jwt_helper';
 import passport from 'passport';
 
 async function register(req, res, next){
@@ -14,8 +13,7 @@ async function register(req, res, next){
         }else{
             const user =  new User(req.body);
             let userRegistered = await user.save();
-            let helper = new JwtHelper(userRegistered);
-            helper.sendJwtResponse(res);
+            res.status(httpStatus.CREATED).send(userRegistered.toAuthJSON());
         }
          
     }catch(error){
@@ -34,8 +32,7 @@ async function login(req, res, next){
                 if (err) {
                    next(createError(httpStatus.BAD_REQUEST, 'Login failed'));
                 }
-                let helper = new JwtHelper(user);
-                helper.sendJwtResponse(res);
+                res.status(httpStatus.OK).send(user.toAuthJSON());
             });
         }
     })(req, res, next);
@@ -52,8 +49,7 @@ async function refreshJwtToken(req, res, next){
             let deletedToken = new JwtTokenBlacklist({token: userJwtToken});
             await deletedToken.save();
 
-            let helper = new JwtHelper(user);
-            helper.sendJwtResponse(res);
+            res.status(httpStatus.OK).send(user.toAuthJSON());
         }else{
             next(createError(httpStatus.NOT_FOUND, 'Error occured while refreshing token'));
         }
@@ -72,8 +68,7 @@ function googleIdTokenAuth(req, res, next){
             if (err || info) {
                return next(createError(httpStatus.BAD_REQUEST, 'Google authentication failed'));
             }
-            let helper = new JwtHelper(user);
-            helper.sendJwtResponse(res);
+            res.status(httpStatus.OK).send(user.toAuthJSON());
         })(req, res, next);
 }
 
@@ -85,8 +80,7 @@ function facebookTokenAuth(req, res, next){
             if (err || info) {
                 return next(createError(httpStatus.BAD_REQUEST, 'Facebook authentication failed'));
             }
-            let helper = new JwtHelper(user);
-            helper.sendJwtResponse(res);
+            res.status(httpStatus.OK).send(user.toAuthJSON());
         })(req, res, next);
 
 }

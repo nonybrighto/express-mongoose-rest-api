@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import config from './../../config/config';
 import {validEmail} from '../helpers/validators';
 
 
@@ -37,6 +39,27 @@ UserSchema.pre('save', async function (next){
     next();
 
 });
+
+UserSchema.methods.generateJwtToken = function(){
+
+    let expireDays = config.get('jwt_token-expire-days');
+
+    console.log(this);
+    return jwt.sign(
+        {id:this.id, username: this.username, email: this.email},
+        config.get('jwt-secret'),
+        {expiresIn: expireDays+' days'}
+    );
+}
+
+UserSchema.methods.toAuthJSON = function(){
+
+    let expireDays = config.get('jwt_token-expire-days');
+    let expirationDate = new Date();
+    expirationDate.setDate(new Date().getDate() + expireDays);
+
+    return {token: this.generateJwtToken(), tokenExpires: expirationDate, user: {id: this.id, username: this.username, email: this.email}};
+}
 
 UserSchema.methods.changePassword = async function(newPassword){
 
