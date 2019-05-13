@@ -45,6 +45,8 @@ expressValidation.options({
 });
 
 //mongoose connection
+console.log(config.get('env'));
+console.log(config.get('mongo-uri'));
 mongoose.connect(config.get('mongo-uri'), {useNewUrlParser: true});
 mongoose.connection.on('error', () => {
     throw new Error(`unable to connect to database`);
