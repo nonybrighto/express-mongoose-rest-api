@@ -1,5 +1,5 @@
 {
-  "name": "express-mongo-api-template",
+  "name": "express-mongoose-rest-api",
   "version": "1.0.0",
   "description": "Template for creating mongodb express api with basic features included",
   "main": "app.js",
@@ -12,9 +12,11 @@
   },
   "keywords": [
     "express",
-    "mongo",
+    "mongodb",
+    "mongoose",
     "api",
-    "rest"
+    "rest",
+    "template"
   ],
   "author": "nonybrighto",
   "license": "ISC",
